@@ -1,0 +1,91 @@
+class dll
+{
+public:
+    struct node
+    {
+        ll val;
+        node *prev;
+        node *next;
+    };
+    node *nil = new node{-1, NULL, NULL};
+    dll()
+    {
+        nil->prev = nil; 
+        nil->next = nil; 
+    }
+    node *head = nil;
+    node *tail = nil;
+
+    node *search(ll key)
+    {
+        node *cur = head;
+        while (cur != nil)
+        {
+            if (cur->val == key) return cur;
+            cur = cur->next;
+        }
+        cout << "Key not present\n";
+        return NULL;
+    }
+
+    void insert_front(ll x)
+    {
+        node *cur = new node;
+        cur->val = x;
+        cur->prev = nil;
+        cur->next = head;
+        head->prev = cur;
+        if(head == nil) tail = cur; 
+        head = cur;
+    }
+    void insert_after(node* bef, ll x)
+    {
+        node *cur = new node;
+        cur->val = x;
+        bef->prev->next = cur; 
+        cur->prev = bef->prev; 
+        bef->prev = cur; 
+        cur->next = bef; 
+        if(bef == head) head = cur; 
+    }
+    void del(node *x)
+    {
+        if (head == x) head = x->next;
+        if (tail == x) tail = x->prev;
+        x->prev->next = x->next;
+        x->next->prev = x->prev;
+        delete (x);
+    }
+    void print()
+    {
+        node *cur = head;
+        while (cur != nil)
+        {
+            cout << cur->val << " ";
+            cur = cur->next;
+        }
+        cout << '\n';
+    }
+    void print_recur(node* cur)
+    {
+        if (cur == nil) return; 
+        cout << cur->val << " "; 
+        print_recur(cur->next); 
+    }
+    void revprint()
+    {
+        node *cur = tail;
+        while (cur != nil)
+        {
+            cout << cur->val << " ";
+            cur = cur->prev;
+        }
+        cout << '\n';
+    }
+    void revprint_recur(node* cur)
+    {
+        if (cur == nil) return; 
+        cout << cur->val << " "; 
+        revprint_recur(cur->prev); 
+    }
+};
