@@ -1,0 +1,294 @@
+// Binary Search Tree IMPLEMENTATIION
+
+class bst
+{
+public:
+    struct node
+    {
+        ll val;
+        node *P;
+        node *L;
+        node *R;
+    };
+
+    node *nil = new node{-1, NULL, NULL, NULL}; 
+    bst()
+    {
+        nil->P = nil;
+        nil->L = nil;
+        nil->R = nil;
+    }
+    node *root = nil;
+
+    void pr(node *x)
+    {
+        cout << x->val << '\n'; 
+    }
+
+    void add1(ll x, node *cur) 
+    {
+        if (x <= cur->val && cur->L == nil)
+        {
+            node *newnode = new node{x, cur, nil, nil};
+            cur->L = newnode;
+        }
+        else if (x <= cur->val && cur->L != nil) add1(x, cur->L);
+        else if (cur->R == nil)
+        {
+            node *newnode = new node{x, cur, nil, nil};
+            cur->R = newnode;
+        }
+        else add1(x, cur->R);
+    }
+
+    void add(ll x)
+    {
+        if (root == nil)
+        {
+            node *newnode = new node{x, nil, nil, nil};
+            root = newnode;
+        }
+        else add1(x, root);
+    }
+
+    void transplant(node *u, node *v)
+    {
+        if (u->P == nil) root = v; 
+        else if (u->P->L == u) u->P->L = v; 
+        else u->P->R = v;
+        if(v != nil) v->P = u->P; 
+    }
+
+    void mylrotate(node* cur)
+    {
+        node *x = cur, *y = cur->R, *a = cur->L, *b = y->L, *c = y->R;
+        transplant(y, b);    
+        transplant(x, y); 
+        y->L = x; 
+        x->P = y; 
+        if(x == root) root = y; 
+    }
+    void lrotate(node* cur)
+    {
+        node *x = cur, *y = cur->R, *a = cur->L, *b = y->L, *c = y->R;
+        transplant(x, y); 
+        x->R = y->L; 
+        y->L->P = x; 
+        y->L = x; 
+        x->P = y; 
+        if(x == root) root = y; 
+    }
+    void rrotate(node* cur)
+    {
+        node *x = cur, *y = cur->L, *a = y->L, *b = y->R, *c = x->R;
+        transplant(x, y);
+        x->L = y->R;
+        y->R->P = x;
+        y->R = x;
+        x->P = y;
+        if(x == root) root = y; 
+    }
+    void del(node *x)
+    {
+        node *u = x; 
+        if(x->L == nil) u = x->R, transplant(x, u); 
+        else if(x->R == nil) u = x->L, transplant(x, u);
+        else if (x->R->L == nil)
+        {
+            u = x->R;
+            transplant(x, u);
+            u->L = x->L;
+            x->L->P = u;
+        }
+        else
+        {
+            u = minn(x->R); 
+            transplant(u, u->R);
+            u->R = x->R; 
+            u->R->P = u; 
+            transplant(x, u); 
+            u->L = x->L; 
+            u->L->P = u;  
+        }
+        if(x == root) root = u;     
+    }
+
+    node *maxn(node *x)
+    {
+        if (x == nil) return nil;
+        if (x->R == nil) return x;
+        return maxn(x->R);
+    }
+
+    node *minn(node *x)
+    {
+        if (x == nil) return nil;
+        if (x->L == nil) return x;
+        return minn(x->L);
+    }
+
+    node *maxn_iter(node *x)
+    {
+        if (x == nil) return nil;
+        while (x->R != nil) x = x->R;
+        return x;
+    }
+
+    node *minn_iter(node *x)
+    {
+        if (x == nil) return nil;
+        while (x->L != nil) x = x->L;
+        return x;
+    }
+
+    //-----------------------------------------------------------------------------------------
+    // USE ITERATIVE VERSION BY DEFAULT
+    // PRINT BST BY RECURSION
+
+    void preorder_recur(node *x) // CLR
+    {
+        if (x == nil) return;
+        cout << x->val << " ";
+        preorder_recur(x->L);
+        preorder_recur(x->R);
+    }
+
+    void inorder_recur(node *x) // LCR
+    {
+        if (x == nil) return;
+        inorder_recur(x->L);
+        cout << x->val << " ";
+        inorder_recur(x->R);
+    }
+
+    void postorder_recur(node *x) // LRC
+    {
+        if (x == nil) return;
+        postorder_recur(x->L);
+        postorder_recur(x->R);
+        cout << x->val << " ";
+    }
+
+    // PRINT BST BY ITERATING
+
+    void preorder(node *x) // CLR // USE THIS BY DEFAULT
+    {
+        stack<node *> s1(S);
+        s1.push(x);
+        while (!s1.isEmpty())
+        {
+            node *y = s1.pop();
+            if (y != nil)
+            {
+                cout << y->val << " ";
+                s1.push(y->R);
+                s1.push(y->L);
+            }
+        }
+        cout << '\n';
+    }
+
+    void inorder(node *x) // LCR // USE THIS BY DEFAULT
+    {
+        stack<node *> s1(S);
+        node *cur = x;
+        s1.push(x); 
+        cur = cur->L; 
+        while (cur != nil || !s1.isEmpty())
+        {
+            if(cur != nil)
+            {
+                s1.push(cur);
+                cur = cur->L;
+            }
+            else
+            {
+                cur = s1.pop();
+                cout << cur->val << " ";
+                cur = cur->R;
+            }           
+        }
+        cout << '\n';
+    }
+
+    void post2s(node *x) // LRC
+    {
+        stack<node *> s1(S);
+        stack<ll> s2(S);
+        s1.push(x);
+        while (!s1.isEmpty())
+        {
+            node *y = s1.pop();
+            if (y != nil)
+            {
+                s2.push(y->val);
+                s1.push(y->L);
+                s1.push(y->R);
+            }
+        }
+        while (!s2.isEmpty()) cout << s2.pop() << " ";
+        cout << '\n';
+    };
+
+    void postorder(node *x) // LRC // USE THIS BY DEFAULT
+    {
+        stack<node *> s1(S);
+        node *cur = x;
+        while (cur != nil || !s1.isEmpty())
+        {
+            if (cur != nil)
+            {
+                s1.push(cur);
+                cur = cur->L;
+            }
+            else
+            {
+                node *temp = s1.peek()->R;
+                if (temp == nil)
+                {
+                    temp = s1.pop();
+                    cout << temp->val << " ";
+                    while (!s1.isEmpty() && temp == s1.peek()->R)
+                    {
+                        temp = s1.pop();
+                        cout << temp->val << " ";
+                    }
+                }
+                else cur = temp;
+            }
+        }
+        cout << '\n';
+    };
+
+    node *search(ll x, node *cur)
+    {
+        if (cur == nil) return nil;
+        if (x == cur->val) return cur;
+        if (x < cur->val) return search(x, cur->L);
+        else return search(x, cur->R);
+    }
+
+    node *search_iter(ll x)
+    {
+        node *cur = root;
+        while (cur != nil && cur->val != x)
+        {
+            if (x < cur->val) cur = cur->L;
+            else cur = cur->R;
+        }
+        return cur;
+    }
+
+    node *succ1(node *x)
+    {
+        node *y = x->P;
+        if (y == nil || y->L == x) return y;
+        return succ1(y);
+    }
+
+    node *succ(node *x)
+    {
+        if (x->R != nil) return minn(x->R);
+        return succ1(x);
+    }
+};
