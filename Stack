@@ -1,0 +1,50 @@
+// AUTHOR : ATUR GUPTA 
+// CODE IS IN C++ 
+
+template<typename T> 
+class stack
+{
+    public:
+        T* a; 
+        ll top; 
+        ll SIZE; 
+        stack(ll sz)
+        {
+            a = new T[sz]; 
+            SIZE = sz; 
+            top = -1; 
+        } 
+        bool isFull()
+        {
+            if(top == SIZE - 1) return true;
+            else return false; 
+        }
+        bool isEmpty()
+        {
+            if(top == -1) return true;
+            else return false; 
+        }
+        ll push(T x)
+        {
+            if(isFull()) return 1; 
+            else {top++, a[top] = x; return 0;}  
+        }
+        T pop()
+        {
+            T x; 
+            if(!isEmpty()) x = a[top], top--; 
+            else return T(nullptr); 
+            return x; 
+        }
+        T peek()
+        {
+            T x; 
+            if(!isEmpty()) x = a[top]; 
+            else return T(nullptr); 
+            return x;  
+        }  
+        ll size()
+        {
+            return top + 1; 
+        }   
+};
